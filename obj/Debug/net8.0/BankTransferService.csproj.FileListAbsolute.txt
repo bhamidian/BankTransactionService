@@ -150,3 +150,4 @@ C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\obj\Debug
 C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\obj\Debug\net8.0\BankTransferService.pdb
 C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\obj\Debug\net8.0\BankTransferService.genruntimeconfig.cache
 C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\obj\Debug\net8.0\ref\BankTransferService.dll
+C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\obj\Debug\net8.0\BankTransferService.sourcelink.json

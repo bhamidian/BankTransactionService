@@ -1,6 +1,7 @@
 ﻿using BankTransferService.ApplicationService.DTOs;
-using BankTransferService.Domain.Contracts;
+using BankTransferService.Domain.Contracts.Repositories;
 using BankTransferService.Infrastructure.Persistence;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,6 +13,8 @@ namespace BankTransferService.Infrastructure.Repositories
 
         public TransactionRepository(AppDbContext context) => _context = context;
 
+        private static readonly Random _rnd = new Random();
+        
         public TransactionDto? GetById(int id)
         {
             return _context.Transactions
@@ -74,6 +77,30 @@ namespace BankTransferService.Infrastructure.Repositories
 
             _context.Transactions.Add(entity);
             return entity.Id; 
+        }
+
+        public string Generatekey()
+        {
+            string numbers = "0123456789";
+            int length = 5;
+            string source = @"C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\transactionkey.txt";
+
+
+            string result = new string(
+                Enumerable.Repeat(numbers, length)
+                          .Select(s => s[_rnd.Next(s.Length)])
+                          .ToArray());
+
+            try
+            {
+                File.WriteAllText(source, result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+            return result;
         }
     }
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BankTransferService.Domain.Contracts
+namespace BankTransferService.Framework
 {
-    public interface IUnitOfWork
+    public static class BankTransferServiceFramework
     {
-        void Save();
+
     }
 }

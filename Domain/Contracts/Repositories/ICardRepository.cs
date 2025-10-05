@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BankTransferService.Domain.Contracts
+namespace BankTransferService.Domain.Contracts.Repositories
 {
     public interface ICardRepository
     {
         CardDto? GetById(string cardNumber);
+        CardTransferDto? GetDestById(string cardNumber);
         List<CardDto> GetAll();
+        bool Login(string username, string password);        
         void Add(CardDto card);
         void UpdateBasic(CardDto card);                 
         void UpdateBalance(string cardNumber, float newBalance);
@@ -18,6 +20,7 @@ namespace BankTransferService.Domain.Contracts
         void ResetFailedAttempt(string cardNumber);     
         void Block(string cardNumber);
         bool CheckPassword(string cardNumber, string password);
+        bool ChangePassword(string cardNumber,string oldPassword, string newPassword);
 
 
     }

@@ -1,4 +1,4 @@
-﻿using BankTransferService.Domain.Contracts;
+﻿using BankTransferService.Domain.Contracts.Repositories;
 using BankTransferService.Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;

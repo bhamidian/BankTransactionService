@@ -1,6 +1,6 @@
 ﻿using BankTransferService.Application_Service.DTOs;
 using BankTransferService.ApplicationService.DTOs;
-using BankTransferService.Domain.Contracts;
+using BankTransferService.Domain.Contracts.Repositories;
 using BankTransferService.Domain.Contracts.Services;
 using System.Text.RegularExpressions;
 
@@ -62,9 +62,18 @@ public class TransactionService : ITransactionService
                              .Select(t => t.Amount)
                              .DefaultIfEmpty(0f)
                              .Sum();
+        var amount = todayTotal + request.Amount;
 
-        if (todayTotal + request.Amount > 250f)
+        if (amount > 250f)
             return Fail("Daily transfer limit (250) exceeded.");
+        if (amount > 100f)
+        {
+            source.Balance -= (float)(amount * 0.15);
+        }
+        if (amount <= 100f)
+        {
+            source.Balance -= (float)(amount * 0.05);
+        }
 
         var originalSourceBalance = source.Balance;
         var originalDestBalance = dest.Balance;
@@ -128,4 +137,15 @@ public class TransactionService : ITransactionService
 
     private static TransferResultDto Fail(string msg)
         => new TransferResultDto { Success = false, Message = msg };
+
+    public bool Generatekey(string key)
+    {
+        string source = @"C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\transactionkey.txt";
+        var realkey = File.ReadAllText(source).Trim();
+        return key == realkey;
+
+        
+    }
+
+
 }

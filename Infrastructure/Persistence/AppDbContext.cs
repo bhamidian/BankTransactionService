@@ -39,7 +39,6 @@ namespace BankTransferService.Infrastructure.Persistence
 
             base.OnModelCreating(modelBuilder);
 
-            // کارت‌ها
             modelBuilder.Entity<Card>().HasData(
                 new Card
                 {
@@ -94,11 +93,21 @@ namespace BankTransferService.Infrastructure.Persistence
                     IsActive = true,
                     Password = "4444",
                     FailedAttempts = 0
+                },
+                new Card
+                {
+                    CardNumber = "6219861820140522",
+                    HolderName = "Karim Karimi",
+                    Balance = 0f,
+                    IsActive = true,
+                    Password = "2222",
+                    FailedAttempts = 0
+
+
                 }
 
             );
 
-            // تراکنش‌ها
             modelBuilder.Entity<Transaction>().HasData(
                 new Transaction
                 {

@@ -15,6 +15,7 @@ public class Program
 
         var context = new AppDbContext(options);
 
+
         var cardRepo = new CardRepository(context);
         var txRepo = new TransactionRepository(context);
         var uow = new UnitOfWork(context);
@@ -23,6 +24,33 @@ public class Program
         var txService = new TransactionService(cardRepo, txRepo, uow);
 
         RunMenu(cardService, txService);
+        
+    }
+
+    static void LoginMenu(CardService cardService, TransactionService txService)
+    {
+        while (true)
+        {
+            Console.WriteLine("\n===Welcome to the Bank ===");
+            Console.WriteLine("1. Login");
+            Console.WriteLine("2. Exit");
+
+            var choice = Console.ReadLine();
+            switch(choice)
+            {
+                case "1":
+                    {
+                        Login(cardService,txService);
+                        break;
+                    }
+                case "2":
+                    {
+                        return;
+                    }
+            }
+
+
+        }
     }
 
 
@@ -34,7 +62,7 @@ public class Program
             Console.WriteLine("1. Show all cards");
             Console.WriteLine("2. Transfer money");
             Console.WriteLine("3. Show transactions for a card");
-            Console.WriteLine("4. Block a card");
+            Console.WriteLine("4. Change password");
             Console.WriteLine("5. Exit");
             Console.Write("Choose an option: ");
 
@@ -45,13 +73,13 @@ public class Program
                     ShowCards(cardService);
                     break;
                 case "2":
-                    DoTransfer(txService);
+                    DoTransfer(txService,cardService);
                     break;
                 case "3":
                     ShowTransactions(txService);
                     break;
                 case "4":
-                    BlockCard(cardService);
+                    ChangePassword(cardService);
                     break;
                 case "5":
                     return;
@@ -66,39 +94,115 @@ public class Program
     {
         Console.WriteLine("\n--- Cards ---");
         var all = cardService.GetAll();
-        foreach (var c in all)
-        {
-            Console.WriteLine($"{c.CardNumber} | {c.HolderName} | Balance: {c.Balance} | Active: {c.IsActive}");
-        }
+
+        ConsolePainter.WriteTable(all);
+        
     }
 
-    static void DoTransfer(TransactionService txService)
+    static void ShowDesticationCard(CardService cardService,string cardnumber)
     {
-        Console.Write("\nEnter source card number: ");
+ 
+
+        Console.WriteLine("\n--- Card ---");
+        var card = cardService.Getdestinfo(cardnumber);
+
+        var cards = new List<CardTransferDto>();
+        cards.Add(card);
+
+        ConsolePainter.WriteTable(cards);
+
+
+
+    }
+
+    static void DoTransfer(TransactionService txService,CardService cardService)
+    {
+
+        Console.WriteLine("Enter source card number: ");
         string source = Console.ReadLine();
 
-        Console.Write("Enter destination card number: ");
+        Console.WriteLine("Enter destination card number: ");
         string dest = Console.ReadLine();
 
-        Console.Write("Enter password: ");
-        string password = Console.ReadLine();
+        ShowDesticationCard(cardService, dest);
 
-        Console.Write("Enter amount: ");
-        float amount = float.Parse(Console.ReadLine());
+        Console.WriteLine("Do you confirm this info?");
+        Console.WriteLine("1.yes");
+        Console.WriteLine("2.no");
 
-        var result = txService.Transfer(new TransferRequestDto
+        string approve = Console.ReadLine();
+
+        switch (approve)
         {
-            SourceCardNumber = source,
-            DestinationCardNumber = dest,
-            Password = password,
-            Amount = amount
-        });
+            case "1":
+                {
+                    DateTime target = DateTime.Now.AddMinutes(5);
 
-        Console.WriteLine(result.Message);
-        if (result.Success && result.Transaction != null)
-        {
-            Console.WriteLine($"Transaction ID: {result.Transaction.Id}, Amount: {result.Transaction.Amount}, Success: {result.Transaction.IsSuccessfull}");
+                    Console.WriteLine("Enter the transaction key:");
+                    string transactionkey = Console.ReadLine();
+
+                    if (target > DateTime.Now)
+                    {
+                        if (txService.Generatekey(transactionkey))
+                        {
+
+                            Console.Write("Enter password: ");
+                            string password = Console.ReadLine();
+
+                            Console.Write("Enter amount: ");
+                            float amount = float.Parse(Console.ReadLine());
+
+                            var result = txService.Transfer(new TransferRequestDto
+                            {
+                                SourceCardNumber = source,
+                                DestinationCardNumber = dest,
+                                Password = password,
+                                Amount = amount
+                            });
+                            Console.WriteLine(result.Message);
+                            if (result.Success && result.Transaction != null)
+                            {
+                                Console.WriteLine($"Transaction ID: {result.Transaction.Id}, Amount: {result.Transaction.Amount}, Success: {result.Transaction.IsSuccessfull}");
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid transaction key");
+
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Your time is off!");
+                    }
+                    break;
+
+                }
+            case "2":
+                {
+                    return;
+                }
+
+            default:
+                {
+                    Console.WriteLine("Invalid choice!;");
+                    break;
+                }
+
         }
+
+
+
+
+
+   
+        
+
+
+
+
+
     }
 
     static void ShowTransactions(TransactionService txService)
@@ -112,11 +216,50 @@ public class Program
 
     }
 
-    static void BlockCard(CardService cardService)
+
+
+    static void Login(CardService cardService, TransactionService txService)
     {
-        Console.Write("\nEnter card number to block: ");
-        string card = Console.ReadLine();
-        cardService.Block(card);
-        Console.WriteLine("Card blocked successfully.");
+        Console.WriteLine("\nEnter card number:");
+        string? cardnumber = Console.ReadLine();
+
+        Console.WriteLine("Enter password:");
+        string? password = Console.ReadLine();
+        if (cardService.Authenticate(cardnumber,password) == true)
+        {
+            RunMenu(cardService, txService);
+
+        }
+        else
+        {
+            Console.WriteLine("cardnumber or password is wrong");
+        }
     }
+
+    static void ChangePassword(CardService cardService)
+    {
+        Console.WriteLine("\nEnter your card number:");
+        string cardnumber = Console.ReadLine();
+
+        Console.WriteLine("Enter your old password:");
+        string oldpassword = Console.ReadLine();
+
+        Console.WriteLine("Enter your new password:");
+        string newpassword = Console.ReadLine();
+
+        var success =cardService.ChangePassword(cardnumber, oldpassword, newpassword);
+
+        Console.WriteLine(
+            success ? "Your password successfully changed!"
+                    : "Your card or old password is wrong!"
+        );
+
+
+
+
+    }
+
+    
+
+
 }

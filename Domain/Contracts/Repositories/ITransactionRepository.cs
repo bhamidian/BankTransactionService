@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BankTransferService.Domain.Contracts
+namespace BankTransferService.Domain.Contracts.Repositories
 {
     public interface ITransactionRepository
     {
@@ -14,6 +14,8 @@ namespace BankTransferService.Domain.Contracts
         List<TransactionDto> GetAll();
         List<TransactionDto> GetByCard(string cardNumber);
         int Add(TransactionDto dto);
+        string Generatekey();
+
 
 
 

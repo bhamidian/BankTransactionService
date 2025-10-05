@@ -1,6 +1,6 @@
 ﻿using BankTransferService.Application_Service.DTOs;
 using BankTransferService.ApplicationService.DTOs;
-using BankTransferService.Domain.Contracts;
+using BankTransferService.Domain.Contracts.Repositories;
 using BankTransferService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -24,6 +24,19 @@ namespace BankTransferService.Infrastructure.Repositories
                     HolderName = c.HolderName,
                     Balance = c.Balance,
                     IsActive = c.IsActive
+                })
+                .FirstOrDefault();
+        }
+
+        public CardTransferDto? GetDestById(string cardNumber)
+        {
+            return _context.Cards
+                .Where(c => c.CardNumber == cardNumber)
+                .Select(c => new CardTransferDto
+                {
+                    CardNumber = c.CardNumber,
+                    HolderName = c.HolderName,
+ 
                 })
                 .FirstOrDefault();
         }
@@ -128,5 +141,25 @@ namespace BankTransferService.Infrastructure.Repositories
             _context.Attach(stub);
             _context.Entry(stub).Property(c => c.IsActive).IsModified = true;
         }
+
+        public bool Login(string cardnumber, string password)
+        {
+            return _context.Cards
+                .Any(x => x.CardNumber == cardnumber && x.Password == password);
+
+        }
+
+
+        public bool ChangePassword(string cardNumber, string oldPassword, string newPassword)
+        {
+            var card = _context.Cards.FirstOrDefault(c => c.CardNumber == cardNumber && c.Password == oldPassword);
+            if (card is null)
+                return false;
+
+            card.Password = newPassword;
+            _context.SaveChanges();
+            return true;
+        }
+
     }
 }

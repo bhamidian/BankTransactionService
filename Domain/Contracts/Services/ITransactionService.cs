@@ -12,6 +12,8 @@ namespace BankTransferService.Domain.Contracts.Services
     {
         TransferResultDto Transfer(TransferRequestDto request); 
         List<TransactionDto> GetByCard(string cardNumber);
+        bool Generatekey(string key);
+
     }
 
 

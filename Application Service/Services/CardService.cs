@@ -1,5 +1,5 @@
 ﻿using BankTransferService.Application_Service.DTOs;
-using BankTransferService.Domain.Contracts;
+using BankTransferService.Domain.Contracts.Repositories;
 using BankTransferService.Domain.Contracts.Services;
 using System;
 using System.Collections.Generic;
@@ -30,6 +30,9 @@ namespace BankTransferService.Application_Service.Services
 
             public CardDto? Get(string cardNumber)
                 => _cards.GetById(cardNumber);
+
+            public CardTransferDto? Getdestinfo(string cardNumber)
+                => _cards.GetDestById(cardNumber);
 
             public bool Authenticate(string cardNumber, string password)
             {
@@ -80,6 +83,14 @@ namespace BankTransferService.Application_Service.Services
             {
                 return _cards.GetAll();
             }
+
+            public bool ChangePassword(string cardNumber, string oldPassword, string newPassword)
+            {
+                return _cards.ChangePassword(cardNumber, oldPassword, newPassword);
+
+
+            }
+
 
         }
     }
