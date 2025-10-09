@@ -2,6 +2,7 @@
 using BankTransferService.ApplicationService.DTOs;
 using BankTransferService.Domain.Contracts.Repositories;
 using BankTransferService.Domain.Contracts.Services;
+using System.Runtime.ConstrainedExecution;
 using System.Text.RegularExpressions;
 
 public class TransactionService : ITransactionService
@@ -48,6 +49,9 @@ public class TransactionService : ITransactionService
             return Fail("Incorrect source card password.");
         }
         _cards.ResetFailedAttempt(source.CardNumber);
+        var finalrequestamount = request.Amount > 100f
+            ? source.Balance -= (float)(request.Amount * 0.15)
+            : source.Balance -= (float)(request.Amount * 0.05);
 
         if (source.Balance < request.Amount)
         {
@@ -68,14 +72,7 @@ public class TransactionService : ITransactionService
 
         if (amount > 250f)
             return Fail("Daily transfer limit (250) exceeded.");
-        if (amount > 100f)
-        {
-            source.Balance -= (float)(amount * 0.15);
-        }
-        if (amount <= 100f)
-        {
-            source.Balance -= (float)(amount * 0.05);
-        }
+ 
 
         var originalSourceBalance = source.Balance;
         var originalDestBalance = dest.Balance;
@@ -92,7 +89,6 @@ public class TransactionService : ITransactionService
 
             _cards.UpdateBalance(dest.CardNumber, originalDestBalance + request.Amount);
             destCredited = true;
-            //_cardService.IncreaseBalance(source.CardNumber, originalSourceBalance + request.Amount);
 
 
             var txDto = new TransactionDto
@@ -118,20 +114,23 @@ public class TransactionService : ITransactionService
         }
         catch
         {
-            try
-            {
-                if (destCredited)
-                    _cardService.DecreaseBalance(source.CardNumber, originalSourceBalance - request.Amount);
-                //_cards.UpdateBalance(dest.CardNumber, originalDestBalance);
+            //try
+            //{
+            //    if (destCredited)
+            //        _cardService.DecreaseBalance(source.CardNumber, originalSourceBalance - request.Amount);
+            //    //_cards.UpdateBalance(dest.CardNumber, originalDestBalance);
 
-                if (sourceDebited)
-                    _cardService.IncreaseBalance(dest.CardNumber, originalDestBalance+ request.Amount);
-                //_cards.UpdateBalance(source.CardNumber, originalSourceBalance);
+            //    if (sourceDebited)
+            //        _cardService.IncreaseBalance(dest.CardNumber, originalDestBalance+ request.Amount);
+            //    //_cards.UpdateBalance(source.CardNumber, originalSourceBalance);
 
 
-                _uow.Save();
-            }
-            catch {  }
+            //    _uow.Save();
+            //}
+            //catch
+            //{ 
+            //    return
+            //}
 
             return Fail("Transfer failed; amount was refunded to the source.");
         }
@@ -145,6 +144,14 @@ public class TransactionService : ITransactionService
 
     private static TransferResultDto Fail(string msg)
         => new TransferResultDto { Success = false, Message = msg };
+
+    //public bool feerate(float amount,bool upperthan100)
+    //{
+
+    //    if (upperthan100 && amount)
+    //    {
+    //    }
+    //}
 
     public bool Generatekey(string key)
     {
