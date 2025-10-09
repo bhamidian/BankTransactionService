@@ -100,6 +100,7 @@ namespace BankTransferService.Infrastructure.Repositories
                 Console.WriteLine(ex.Message);
                 throw;
             }
+            _context.SaveChanges();
             return result;
         }
     }

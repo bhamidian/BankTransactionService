@@ -9,5 +9,6 @@ namespace BankTransferService.Framework
     public static class BankTransferServiceFramework
     {
 
+
     }
 }

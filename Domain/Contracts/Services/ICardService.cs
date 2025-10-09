@@ -12,5 +12,8 @@ namespace BankTransferService.Domain.Contracts.Services
         void UpdateBasic(CardDto card);                       
         void SetActive(string cardNumber, bool isActive);
         void UpdateBalance(string cardNumber, float newBalance);
+        public void ChangeBalance(string cardNumber, float amount);
+        public void IncreaseBalance(string cardNumber, float amount);
+        public void DecreaseBalance(string cardNumber, float amount);
     }
 }

@@ -91,7 +91,23 @@ namespace BankTransferService.Application_Service.Services
 
             }
 
+            public void IncreaseBalance(string cardNumber, float amount)
+            {
+                _cards.ChangeBalance(cardNumber, amount);
+                _uow.Save();
+            }
 
+            public void DecreaseBalance(string cardNumber, float amount)
+            {
+                _cards.ChangeBalance(cardNumber, -amount);
+                _uow.Save();
+                
+            }
+
+            public void ChangeBalance(string cardNumber, float amount)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 

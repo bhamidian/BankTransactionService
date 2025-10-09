@@ -1,11 +1,12 @@
 ﻿using BankTransferService.Framework;
 
-public class Transaction : BaseEntity
+public class Transaction 
 {
     public Transaction ()
     {
 
     }
+    public int Id { get; set; }
     public float Amount { get; set; }
     public DateTime TransactionDate { get; set; }
     public bool IsSuccessfull { get; set; }

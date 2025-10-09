@@ -21,7 +21,7 @@ public class Program
         var uow = new UnitOfWork(context);
 
         var cardService = new CardService(cardRepo, uow);
-        var txService = new TransactionService(cardRepo, txRepo, uow);
+        var txService = new TransactionService(cardRepo, txRepo, uow,cardService);
 
         RunMenu(cardService, txService);
         
@@ -138,8 +138,11 @@ public class Program
                 {
                     DateTime target = DateTime.Now.AddMinutes(5);
 
+                    txService.KeyGenerator();
                     Console.WriteLine("Enter the transaction key:");
                     string transactionkey = Console.ReadLine();
+                    
+                   
 
                     if (target > DateTime.Now)
                     {

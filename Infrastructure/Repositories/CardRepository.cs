@@ -92,7 +92,7 @@ namespace BankTransferService.Infrastructure.Repositories
             if (tracked != null)
             {
                 tracked.Balance = newBalance;
-                return; 
+                return;
             }
 
             var stub = new Card { CardNumber = cardNumber };
@@ -101,6 +101,13 @@ namespace BankTransferService.Infrastructure.Repositories
             _context.Entry(stub).Property(c => c.Balance).IsModified = true;
         }
 
+        public void ChangeBalance(string cardNumber, float amount)
+        {
+            _context.Cards
+                .Where(c => c.CardNumber == cardNumber)
+                .ExecuteUpdate(c => c
+                    .SetProperty(x => x.Balance, x => x.Balance + amount));
+        }
 
         public bool CheckPassword(string cardNumber, string password)
         {
@@ -160,6 +167,7 @@ namespace BankTransferService.Infrastructure.Repositories
             _context.SaveChanges();
             return true;
         }
+
 
     }
 }

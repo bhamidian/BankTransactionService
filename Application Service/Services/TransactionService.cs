@@ -9,14 +9,16 @@ public class TransactionService : ITransactionService
     private readonly ICardRepository _cards;
     private readonly ITransactionRepository _txs;
     private readonly IUnitOfWork _uow;
+    private readonly ICardService _cardService;
 
     private static readonly Regex _cardRegex = new Regex(@"^\d{16}$");
 
-    public TransactionService(ICardRepository cards, ITransactionRepository txs, IUnitOfWork uow)
+    public TransactionService(ICardRepository cards, ITransactionRepository txs, IUnitOfWork uow,ICardService cardService)
     {
         _cards = cards;
         _txs = txs;
         _uow = uow;
+        _cardService = cardService;
     }
 
     public TransactionService()
@@ -84,10 +86,14 @@ public class TransactionService : ITransactionService
         try
         {
             _cards.UpdateBalance(source.CardNumber, originalSourceBalance - request.Amount);
+            _cardService.DecreaseBalance(dest.CardNumber, originalDestBalance - request.Amount);
+
             sourceDebited = true;
 
             _cards.UpdateBalance(dest.CardNumber, originalDestBalance + request.Amount);
             destCredited = true;
+            //_cardService.IncreaseBalance(source.CardNumber, originalSourceBalance + request.Amount);
+
 
             var txDto = new TransactionDto
             {
@@ -115,10 +121,12 @@ public class TransactionService : ITransactionService
             try
             {
                 if (destCredited)
-                    _cards.UpdateBalance(dest.CardNumber, originalDestBalance);
+                    _cardService.DecreaseBalance(source.CardNumber, originalSourceBalance - request.Amount);
+                //_cards.UpdateBalance(dest.CardNumber, originalDestBalance);
 
                 if (sourceDebited)
-                    _cards.UpdateBalance(source.CardNumber, originalSourceBalance);
+                    _cardService.IncreaseBalance(dest.CardNumber, originalDestBalance+ request.Amount);
+                //_cards.UpdateBalance(source.CardNumber, originalSourceBalance);
 
 
                 _uow.Save();
@@ -140,12 +148,19 @@ public class TransactionService : ITransactionService
 
     public bool Generatekey(string key)
     {
+        
         string source = @"C:\Users\Abolfazl\source\repos\BankTransferService\BankTransferService\transactionkey.txt";
         var realkey = File.ReadAllText(source).Trim();
         return key == realkey;
 
         
     }
+
+    public string KeyGenerator()
+    {
+        return _txs.Generatekey();
+    }
+
 
 
 }

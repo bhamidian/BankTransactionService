@@ -111,7 +111,7 @@ namespace BankTransferService.Infrastructure.Persistence
             modelBuilder.Entity<Transaction>().HasData(
                 new Transaction
                 {
-                    Id = 1,
+                    Id =1,
                     Amount = 200000f,
                     TransactionDate = new DateTime(2025, 1, 3, 12, 0, 0),
                     IsSuccessfull = true,

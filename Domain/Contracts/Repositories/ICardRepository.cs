@@ -21,6 +21,7 @@ namespace BankTransferService.Domain.Contracts.Repositories
         void Block(string cardNumber);
         bool CheckPassword(string cardNumber, string password);
         bool ChangePassword(string cardNumber,string oldPassword, string newPassword);
+        void ChangeBalance(string cardNumber, float amount);
 
 
     }

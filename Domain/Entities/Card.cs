@@ -1,7 +1,7 @@
 ﻿using BankTransferService.Framework;
 using System.ComponentModel.DataAnnotations;
 
-public class Card : BaseEntity
+public class Card 
 {
     [Key] 
     public string CardNumber { get; set; }
