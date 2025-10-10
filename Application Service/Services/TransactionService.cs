@@ -50,8 +50,8 @@ public class TransactionService : ITransactionService
         }
         _cards.ResetFailedAttempt(source.CardNumber);
         var finalrequestamount = request.Amount > 100f
-            ? source.Balance -= (float)(request.Amount * 0.15)
-            : source.Balance -= (float)(request.Amount * 0.05);
+            ? source.Balance -= (float)(request.Amount * 0.015)
+            : source.Balance -= (float)(request.Amount * 0.005);
 
         if (source.Balance < request.Amount)
         {
